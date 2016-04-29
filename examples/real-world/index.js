@@ -1,22 +1,13 @@
-import 'babel-polyfill'
-// React imports
-import React from 'react'
-import { render } from 'react-dom'
+import 'babel-polyfill';
+import React from 'react';
+import { history } from './services';
+import configureStore from './store/configureStore';
+import { renderWithHotReload, hotReloadSagas } from './hot-reload';
 
-// app specific imports
-import { history } from './services'
-import routes from './routes'
-import Root from './containers/Root'
-import configureStore from './store/configureStore'
-import rootSaga from './sagas'
+const store = configureStore(window.__INITIAL_STATE__);
+hotReloadSagas(store);
 
-const store = configureStore(window.__INITIAL_STATE__)
-store.runSaga(rootSaga)
-
-render(
-  <Root
-    store={store}
-    history={history}
-    routes={routes} />,
-  document.getElementById('root')
-)
+renderWithHotReload({
+  configure: (Root) => <Root store={store} history={history} />,
+  elementId: 'root'
+});
